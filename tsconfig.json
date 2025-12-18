@@ -1,0 +1,39 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./apps/api" },
+    { "path": "./apps/web/" },
+    { "path": "./packages/rpc" },
+    { "path": "./packages/schema" },
+    { "path": "./tsconfig.tools.json" }
+  ],
+
+  "compilerOptions": {
+    "target": "ES2022",
+    "skipLibCheck": true,
+    "allowJs": true,
+
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "noUncheckedIndexedAccess": true,
+
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
+
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+
+    "forceConsistentCasingInFileNames": true
+  }
+}

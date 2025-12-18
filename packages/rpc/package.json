@@ -1,0 +1,19 @@
+{
+  "name": "rpc",
+  "version": "0.0.0",
+  "description": "A starter kit for a Vite + oRPC",
+  "type": "module",
+  "exports": {
+    ".": "./src/main.ts"
+  },
+  "dependencies": {
+    "@orpc/client": "catalog:orpc",
+    "@orpc/contract": "catalog:orpc",
+    "@orpc/openapi-client": "catalog:orpc",
+    "schema": "workspace:*",
+    "zod": "catalog:default"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "catalog:cloudflare"
+  }
+}
