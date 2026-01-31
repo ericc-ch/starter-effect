@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["./src/"],
+
+  "compilerOptions": {
+    "composite": true,
+    "jsx": "react-jsx",
+
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
+    "types": ["node", "@cloudflare/workers-types"]
+  }
+}

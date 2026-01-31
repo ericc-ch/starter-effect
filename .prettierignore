@@ -1,0 +1,2 @@
+pnpm-lock.yaml
+packages/shared/src/schema/auth.sql.ts

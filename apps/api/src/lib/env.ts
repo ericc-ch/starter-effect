@@ -1,0 +1,21 @@
+import { Schema } from "effect"
+
+export const EnvSchema = Schema.Struct({
+  API_CORS_ORIGIN: Schema.String.pipe(
+    Schema.optional,
+    Schema.withDefaults({
+      decoding: () => "http://localhost:5173",
+      constructor: () => "http://localhost:5173",
+    }),
+  ),
+  API_BETTER_AUTH_SECRET: Schema.String.pipe(Schema.minLength(1)),
+  API_BETTER_AUTH_URL: Schema.URL.pipe(
+    Schema.optional,
+    Schema.withDefaults({
+      decoding: () => new URL("http://localhost:1337"),
+      constructor: () => new URL("http://localhost:1337"),
+    }),
+  ),
+})
+
+export type ParsedEnv = Schema.Schema.Type<typeof EnvSchema>
