@@ -99,3 +99,42 @@ Next: Begin working on first task.
 - Typecheck shows many errors in legacy Hono/oRPC code (expected during migration)
 - Tests fail due to missing procedure files (organization-members, organizations, users)
 - Lint error in `effect-test.ts` (unrelated to this task)
+
+---
+
+## Session 2026-02-01
+
+### Task Completed: Main Entry Point
+
+**What was done:**
+- Created `apps/api/src/main_effect.ts` with Cloudflare Workers fetch handler
+- Implemented `createEffectApp` function that builds the Effect HTTP application
+- Parsed and validated environment using `Schema.decodeUnknownSync(EnvSchema)`
+- Created all necessary layers: `EnvContext`, `Database`, `Auth`, `BookRepo`, `BooksHandlers`, `RpcSerialization`
+- Properly composed layers using `Layer.provide` to satisfy dependencies
+- Built the HttpApp using `HttpRouter.toHttpApp` and applied CORS middleware
+- Used `HttpApp.toWebHandlerLayer` to convert to a web-compatible fetch handler
+- Exported default object with `fetch` method matching Cloudflare Workers interface
+
+**Decisions made:**
+- Used `HttpApp.toWebHandlerLayer` instead of `HttpApp.toWebHandler` to properly manage layer lifecycle
+- Moved layer provision to the top level in `main_effect.ts` instead of inside the router
+- Used `Effect.flatten` after `HttpRouter.toHttpApp` since it returns `Effect<Effect<HttpServerResponse>>`
+- Structured layers hierarchically: base layers (no deps) → dependent layers → merged app layer
+- Applied CORS middleware after converting router to HttpApp using the middleware function pattern
+
+**Blockers encountered:**
+- Initial confusion about `HttpApp.toWebHandlerLayer` signature - it expects an `HttpApp.Default` (Effect returning HttpServerResponse), not an Effect returning another Effect
+- Understanding that `HttpRouter.toHttpApp` returns `Effect<App.Default>` which needs to be flattened
+- Layer dependency resolution - `Auth` layer requires `EnvContext` and `Database`, so needed to use `Layer.provide` to satisfy dependencies before merging
+- Type errors about missing context requirements (RpcSerialization, individual handlers) until all layers were properly composed
+
+**Files changed:**
+- Created: `apps/api/src/main_effect.ts`
+- Modified: `plan.md` (marked Main Entry Point as complete)
+
+**Pre-existing issues noted:**
+- Typecheck shows many errors in legacy Hono/oRPC code (expected during migration)
+- Tests fail due to missing procedure files (organization-members, organizations, users)
+- Lint error in `effect-test.ts` (unrelated to this task)
+- `main_effect.ts` has no type errors and is ready for use

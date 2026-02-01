@@ -54,7 +54,7 @@
     - Mounts `/api/auth/*` -> Better Auth handler
     - Mounts `/rpc/*` -> RPC handler (with session middleware)
     - Mounts `/` -> Health check
-  - [ ] **Main Entry Point**: Create `apps/api/src/main_effect.ts` that:
+  - [x] **Main Entry Point**: Create `apps/api/src/main_effect.ts` that:
     - Builds the `HttpApp` with router and middleware
     - Uses `HttpApp.toWebHandler` (or equivalent) to export a fetch handler
     - Returns `{ fetch: (request: Request, env: Env, ctx: ExecutionContext) => Promise<Response> }` for Cloudflare Workers
