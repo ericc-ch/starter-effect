@@ -260,3 +260,32 @@ Next: Begin working on first task.
 - Tests fail due to missing procedure files (organization-members, organizations, users)
 - Lint error in `effect-test.ts` (unrelated to this task)
 - All new Effect RPC files have no type errors
+
+---
+
+## Session 2026-02-01
+
+### Task Completed: Switch Entry
+
+**What was done:**
+- Renamed `apps/api/src/main_effect.ts` to `apps/api/src/main.ts`
+- Backed up old Hono main.ts to `apps/api/src/main_hono_backup.ts`
+- Verified the new Effect-based main.ts has no type errors
+
+**Decisions made:**
+- Kept the backup file for reference during the rest of Phase 3 cleanup
+- The new main.ts is now the default entry point for Cloudflare Workers
+
+**Blockers encountered:**
+- None - straightforward file operations
+
+**Files changed:**
+- Renamed: `apps/api/src/main_effect.ts` → `apps/api/src/main.ts`
+- Created: `apps/api/src/main_hono_backup.ts` (backup of old Hono main)
+- Modified: `plan.md` (marked Switch Entry as complete)
+
+**Pre-existing issues noted:**
+- Typecheck shows many errors in legacy Hono/oRPC code (expected during migration)
+- Tests fail due to missing procedure files (organization-members, organizations, users)
+- Lint error in `effect-test.ts` (unrelated to this task)
+- New `main.ts` has no type errors

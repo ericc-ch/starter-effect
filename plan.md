@@ -79,7 +79,7 @@
 
 - **Goal**: Remove Hono/oRPC and make Effect server the default.
 - **Key Deliverables**:
-  - [ ] **Switch Entry**: Rename `apps/api/src/main_effect.ts` to `apps/api/src/main.ts`, backup old main.
+  - [x] **Switch Entry**: Rename `apps/api/src/main_effect.ts` to `apps/api/src/main.ts`, backup old main.
   - [ ] **Remove Hono**: Uninstall `hono` from `apps/api/package.json`.
   - [ ] **Remove oRPC**: Uninstall `@orpc/server`, `@orpc/openapi` from `apps/api/package.json`.
   - [ ] **Delete Legacy**: Remove:
