@@ -10,7 +10,7 @@ Fight entropy. Leave the codebase better than you found it.
 
 ## Workflow
 
-Always explore the codebase first using grep/glob/read tools to understand the structure, then load relevant skill when working on something.
+Always explore the codebase first using grep/glob/read tools to understand the structure, then explore the .context/ directory to find relevant library source code, then load relevant skill when working on something.
 
 ## Architecture
 
