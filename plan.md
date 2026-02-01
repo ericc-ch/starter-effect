@@ -46,7 +46,7 @@
 - **Key Deliverables**:
   - [ ] **Better Auth HTTP Handler**: Create `apps/api/src/lib/auth/http.ts` that wraps Better Auth's `auth.handler(request)` for `@effect/platform` compatibility. Returns `Effect<Response, never, Auth>`.
   - [x] **CORS Middleware**: Create `apps/api/src/lib/http/cors.ts` using `HttpMiddleware.cors` from `@effect/platform` with origin from `EnvContext`.
-  - [ ] **Auth Session Middleware**: Create `apps/api/src/lib/auth/session.ts` that:
+  - [x] **Auth Session Middleware**: Create `apps/api/src/lib/auth/session.ts` that:
     - Reads `Cookie` header from `HttpServerRequest`
     - Calls `auth.api.getSession({ headers })`
     - Provides `CurrentUser` Layer (or `Option<CurrentUser>` for optional auth)

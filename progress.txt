@@ -32,3 +32,37 @@ Next: Begin working on first task.
 - Lint error in `effect-test.ts` (unrelated to this task)
 
 ---
+
+## Session 2026-02-01
+
+### Task Completed: Auth Session Middleware
+
+**What was done:**
+- Created `apps/api/src/lib/auth/session.ts` with session extraction and auth middleware
+- Implemented `CurrentUser` Context.Tag for dependency injection
+- Created `SessionSchema` using Effect Schema for type-safe session validation
+- Implemented `extractSession` effect to read Cookie header and call Better Auth's `getSession`
+- Implemented `requireAuth` and `optionalAuth` helpers for different auth requirements
+- Created `CurrentUserLive` and `CurrentUserOptionalLive` layers for providing user context
+- Exported `UnauthorizedError` tagged error for auth failures
+
+**Decisions made:**
+- Used `Option<Session>` pattern for optional auth scenarios instead of throwing
+- Converted Effect's custom Headers type to Web API Headers using Object.entries()
+- Made CurrentUser service provide user info directly (not the full session) for convenience
+- Created separate layers for required vs optional auth to support different use cases
+
+**Blockers encountered:**
+- Had to research Effect's Headers type structure (it's a custom object, not Web API Headers)
+- Better Auth's `getSession` expects Web API Headers, so conversion was needed
+
+**Files changed:**
+- Created: `apps/api/src/lib/auth/session.ts`
+- Modified: `plan.md` (marked Auth Session Middleware as complete)
+
+**Pre-existing issues noted:**
+- Typecheck shows many errors in legacy Hono/oRPC code (expected during migration)
+- Tests fail due to missing procedure files (organization-members, organizations, users)
+- Lint error in `effect-test.ts` (unrelated to this task)
+
+---
