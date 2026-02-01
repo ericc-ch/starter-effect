@@ -44,7 +44,7 @@
 
 - **Goal**: Get the Effect HTTP server running with Better Auth routes working.
 - **Key Deliverables**:
-  - [ ] **Better Auth HTTP Handler**: Create `apps/api/src/lib/auth/http.ts` that wraps Better Auth's `auth.handler(request)` for `@effect/platform` compatibility. Returns `Effect<Response, never, Auth>`.
+  - [x] **Better Auth HTTP Handler**: Create `apps/api/src/lib/auth/http.ts` that wraps Better Auth's `auth.handler(request)` for `@effect/platform` compatibility. Returns `Effect<Response, never, Auth>`.
   - [x] **CORS Middleware**: Create `apps/api/src/lib/http/cors.ts` using `HttpMiddleware.cors` from `@effect/platform` with origin from `EnvContext`.
   - [x] **Auth Session Middleware**: Create `apps/api/src/lib/auth/session.ts` that:
     - Reads `Cookie` header from `HttpServerRequest`
