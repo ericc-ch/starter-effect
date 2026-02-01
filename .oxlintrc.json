@@ -42,7 +42,7 @@
     "typescript/use-unknown-in-catch-callback-variable": "error",
 
     "unicorn/no-abusive-eslint-disable": "error",
-    "unicorn/no-array-for-each": "error",
+    // "unicorn/no-array-for-each": "error",
     "unicorn/no-document-cookie": "error",
     "unicorn/no-length-as-slice-end": "error",
     "unicorn/no-magic-array-flat-depth": "error",

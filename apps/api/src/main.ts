@@ -1,80 +1,89 @@
-import { HttpApp, HttpRouter } from "@effect/platform"
-import { RpcSerialization } from "@effect/rpc"
+import {
+  HttpApp,
+  HttpMiddleware,
+  HttpRouter,
+  HttpServerRequest,
+  HttpServerResponse,
+} from "@effect/platform"
+import { RpcSerialization, RpcServer } from "@effect/rpc"
+import { env } from "cloudflare:workers"
 import { Effect, Layer, Schema } from "effect"
-import { createRouter } from "./http/router"
-import { corsMiddleware } from "./lib/http/cors"
+import { Auth } from "./lib/auth/main"
 import { createDB, Database } from "./lib/db"
 import { EnvContext, EnvSchema } from "./lib/env"
-import { Auth } from "./lib/auth/main"
-import { BookRepoLive } from "./rpc/services/books"
 import { BooksHandlers } from "./rpc/handlers/books"
+import { RootRpcGroup } from "./rpc/main"
+import { BookRepoLive } from "./rpc/services/books"
 
-/**
- * Creates the Effect HTTP application for Cloudflare Workers.
- * Returns a fetch handler that can be used as the default export.
- */
-function createEffectApp(env: Env) {
-  // Parse and validate environment
-  const parsedEnv = Schema.decodeUnknownSync(EnvSchema)(env)
+export const corsMiddleware = (origin: string) =>
+  HttpMiddleware.cors({
+    allowedOrigins: [origin],
+    credentials: true,
+    allowedMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
 
-  // Create database connection
-  const db = createDB(env.DB)
+export const handleAuthRequest = Effect.gen(function* () {
+  const request = yield* HttpServerRequest.HttpServerRequest
+  const auth = yield* Auth
 
-  // Create base layers (no dependencies)
-  const envContextLayer = Layer.succeed(EnvContext, parsedEnv)
-  const dbLayer = Layer.succeed(Database, db)
-  const rpcSerializationLayer = RpcSerialization.layerJson
+  const rawRequest = yield* HttpServerRequest.toWeb(request)
+  const response = yield* Effect.promise(() => auth.handler(rawRequest))
 
-  // Auth layer depends on EnvContext and Database
-  const authLayer = Auth.Default.pipe(
-    Layer.provide(envContextLayer),
-    Layer.provide(dbLayer),
+  return yield* HttpServerResponse.fromWeb(response)
+})
+
+export const createRouter = Effect.gen(function* () {
+  return HttpRouter.empty.pipe(
+    HttpRouter.get("/", HttpServerResponse.json({ status: "ok" })),
+    HttpRouter.mountApp("/api/auth", handleAuthRequest),
+    HttpRouter.mountApp("/rpc", yield* RpcServer.toHttpApp(RootRpcGroup)),
   )
+})
 
-  // BookRepo layer depends on Database (via the db parameter in BookRepoLive)
-  // Since BookRepoLive takes db directly, it's already satisfied
-  const bookRepoLayer = BookRepoLive(db)
+// Parse and validate environment
+const parsedEnv = Schema.decodeUnknownSync(EnvSchema)(env)
 
-  // BooksHandlers layer depends on BookRepo
-  const booksHandlersLayer = BooksHandlers.pipe(Layer.provide(bookRepoLayer))
+// Create database connection
+const db = createDB(env.DB)
 
-  // Merge all layers - build from the bottom up
-  const appLayer = Layer.mergeAll(
-    envContextLayer,
-    dbLayer,
-    authLayer,
-    bookRepoLayer,
-    booksHandlersLayer,
-    rpcSerializationLayer,
-  )
+// Create base layers (no dependencies)
+const envContextLayer = Layer.succeed(EnvContext, parsedEnv)
+const dbLayer = Layer.succeed(Database, db)
+const rpcSerializationLayer = RpcSerialization.layerJson
 
-  // Build the HttpApp with router
-  const app = Effect.gen(function* () {
-    const router = yield* createRouter
-    // Convert router to HttpApp
-    return yield* HttpRouter.toHttpApp(router)
-  }).pipe(Effect.flatten)
+// Auth layer depends on EnvContext and Database
+const authLayer = Auth.Default.pipe(
+  Layer.provide(envContextLayer),
+  Layer.provide(dbLayer),
+)
 
-  // Apply CORS middleware to the app
-  const appWithCors = corsMiddleware(parsedEnv.API_CORS_ORIGIN.toString())(app)
+// BookRepo layer depends on Database (via the db parameter in BookRepoLive)
+// Since BookRepoLive takes db directly, it's already satisfied
+const bookRepoLayer = BookRepoLive(db)
 
-  // Convert to web handler layer - this handles scope management internally
-  const { handler } = HttpApp.toWebHandlerLayer(appWithCors, appLayer)
+// BooksHandlers layer depends on BookRepo
+const booksHandlersLayer = BooksHandlers.pipe(Layer.provide(bookRepoLayer))
 
-  return { handler }
-}
+// Merge all layers - build from the bottom up
+const appLayer = Layer.mergeAll(
+  envContextLayer,
+  dbLayer,
+  authLayer,
+  bookRepoLayer,
+  booksHandlersLayer,
+  rpcSerializationLayer,
+)
 
-/**
- * Cloudflare Workers default export.
- * Provides the fetch handler that processes all incoming requests.
- */
-export default {
-  fetch: (
-    request: Request,
-    env: Env,
-    _ctx: ExecutionContext,
-  ): Promise<Response> => {
-    const { handler } = createEffectApp(env)
-    return handler(request)
-  },
-}
+// Build the HttpApp with router
+const app = Effect.gen(function* () {
+  const router = yield* createRouter
+  // Convert router to HttpApp
+  return yield* HttpRouter.toHttpApp(router)
+}).pipe(Effect.flatten)
+
+// Apply CORS middleware to the app
+const appWithCors = corsMiddleware(parsedEnv.API_CORS_ORIGIN.toString())(app)
+
+// Convert to web handler layer - this handles scope management internally
+export default HttpApp.toWebHandlerLayer(appWithCors, appLayer)

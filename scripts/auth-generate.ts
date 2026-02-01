@@ -7,7 +7,7 @@ const command = [
   "generate",
   "--yes",
   "--config",
-  "./apps/api/src/lib/auth.ts",
+  "./apps/api/src/lib/auth/dummy.ts",
   "--output",
   "./packages/shared/src/schema/auth.sql.ts",
 ]

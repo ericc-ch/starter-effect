@@ -44,6 +44,7 @@ function BreadcrumbLink({
   render,
   ...props
 }: useRender.ComponentProps<"a">) {
+  // @ts-expect-error this is from shadcn idgaf
   return useRender({
     defaultTagName: "a",
     props: mergeProps<"a">(

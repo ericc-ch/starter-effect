@@ -37,8 +37,12 @@
     "tsx": "^4.21.0",
     "typescript": "catalog:default",
     "vitest": "catalog:vitest",
+    "wrangler": "catalog:cloudflare",
     "yargs": "^18.0.0",
     "zod": "catalog:default"
   },
-  "packageManager": "pnpm@10.28.2"
+  "packageManager": "pnpm@10.28.2",
+  "comments": [
+    "I added wrangler here is because of deps, alchemy has mismatching version required with @cloudflare/vite-plugin. This forces wrangler to be a specific version"
+  ]
 }

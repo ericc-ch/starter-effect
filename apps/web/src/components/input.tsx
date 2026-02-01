@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils"
 
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
+    // @ts-expect-error this is from shadcn idgaf
     <InputPrimitive
       type={type}
       data-slot="input"

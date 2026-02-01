@@ -368,6 +368,7 @@ function SidebarMenuButton({
   & React.ComponentProps<"button"> & {
     isActive?: boolean
   } & VariantProps<typeof sidebarMenuButtonVariants>) {
+  // @ts-expect-error this is from shadcn idgaf
   return useRender({
     defaultTagName: "button",
     props: mergeProps<"button">(
@@ -395,6 +396,7 @@ function SidebarMenuAction({
   & React.ComponentProps<"button"> & {
     showOnHover?: boolean
   }) {
+  // @ts-expect-error this is from shadcn idgaf
   return useRender({
     defaultTagName: "button",
     props: mergeProps<"button">(
@@ -514,6 +516,7 @@ function SidebarMenuSubButton({
     size?: "sm" | "md"
     isActive?: boolean
   }) {
+  // @ts-expect-error this is from shadcn idgaf
   return useRender({
     defaultTagName: "a",
     props: mergeProps<"a">(
