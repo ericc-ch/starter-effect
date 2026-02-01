@@ -12,8 +12,6 @@
     "@effect/sql": "^0.49.0",
     "@effect/sql-d1": "^0.47.0",
     "@effect/sql-drizzle": "^0.48.0",
-    "@orpc/openapi": "catalog:orpc",
-    "@orpc/server": "catalog:orpc",
     "better-auth": "catalog:better-auth",
     "drizzle-orm": "catalog:drizzle",
     "drizzle-zod": "catalog:drizzle",

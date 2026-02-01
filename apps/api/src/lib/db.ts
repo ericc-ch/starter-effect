@@ -3,7 +3,7 @@ import type { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core"
 import { Context } from "effect"
 import { schema } from "shared/schema"
 
-type GenericSQLite = BaseSQLiteDatabase<
+export type GenericSQLite = BaseSQLiteDatabase<
   "sync" | "async",
   unknown,
   typeof schema

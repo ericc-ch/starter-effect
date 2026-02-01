@@ -33,7 +33,7 @@ function createEffectApp(env: Env) {
 
   // BookRepo layer depends on Database (via the db parameter in BookRepoLive)
   // Since BookRepoLive takes db directly, it's already satisfied
-  const bookRepoLayer = BookRepoLive(env.DB)
+  const bookRepoLayer = BookRepoLive(db)
 
   // BooksHandlers layer depends on BookRepo
   const booksHandlersLayer = BooksHandlers.pipe(Layer.provide(bookRepoLayer))

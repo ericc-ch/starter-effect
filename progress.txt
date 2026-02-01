@@ -318,3 +318,57 @@ Next: Begin working on first task.
 - All new Effect RPC files have no type errors
 
 ---
+
+---
+
+## Session 2026-02-01
+
+### Task Completed: Remove oRPC and Delete Legacy Files
+
+**What was done:**
+- Removed \`@orpc/server\` and \`@orpc/openapi\` dependencies from \`apps/api/package.json\`
+- Deleted legacy Hono/oRPC files:
+  - \`apps/api/src/app.ts\`
+  - \`apps/api/src/procedures/books.ts\`
+  - \`apps/api/src/procedures/main.ts\`
+  - \`apps/api/src/lib/orpc/middleware.ts\`
+  - \`apps/api/src/lib/orpc/context.ts\`
+- Removed empty directories: \`apps/api/src/procedures/\`, \`apps/api/src/lib/orpc/\`
+- Deleted \`apps/api/src/main_hono_backup.ts\` (no longer needed)
+- Fixed \`apps/api/src/lib/services.ts\` to use correct imports from \`./auth/make\` instead of deleted \`./auth\`
+- Fixed \`apps/api/src/lib/db.ts\` to export \`GenericSQLite\` type
+- Fixed \`apps/api/src/rpc/services/books.ts\` to use correct \`GenericSQLite\` type for \`BookRepoLive\` parameter
+- Fixed \`apps/api/src/main.ts\` to pass drizzle db instance instead of raw D1Database to \`BookRepoLive\`
+- Updated \`apps/api/src/main.test.ts\` to work with new Effect-based architecture
+
+**Decisions made:**
+- \`BookRepoLive\` now takes a \`GenericSQLite\` (drizzle database) instead of \`D1Database\` since it needs drizzle methods like \`select()\`, \`insert()\`, etc.
+- Updated test file to create proper mock environment with drizzle database
+- Removed backup file since migration is complete and all legacy code is deleted
+
+**Blockers encountered:**
+- Type errors in \`services.ts\` due to importing from deleted \`./auth\` path - fixed by importing from \`./auth/make\`
+- Type errors in \`books.ts\` due to missing \`DB\` export - fixed by exporting \`GenericSQLite\` from \`db.ts\`
+- Type errors in \`main.ts\` and test file due to passing wrong database type to \`BookRepoLive\` - fixed by passing drizzle instance
+
+**Files changed:**
+- Modified: \`apps/api/package.json\` (removed \`@orpc/server\`, \`@orpc/openapi\`)
+- Deleted: \`apps/api/src/app.ts\`
+- Deleted: \`apps/api/src/procedures/books.ts\`
+- Deleted: \`apps/api/src/procedures/main.ts\`
+- Deleted: \`apps/api/src/lib/orpc/middleware.ts\`
+- Deleted: \`apps/api/src/lib/orpc/context.ts\`
+- Deleted: \`apps/api/src/main_hono_backup.ts\`
+- Modified: \`apps/api/src/lib/services.ts\` (fixed imports)
+- Modified: \`apps/api/src/lib/db.ts\` (exported GenericSQLite type)
+- Modified: \`apps/api/src/rpc/services/books.ts\` (fixed BookRepoLive parameter type)
+- Modified: \`apps/api/src/main.ts\` (fixed BookRepoLive call)
+- Modified: \`apps/api/src/main.test.ts\` (updated for Effect architecture)
+- Modified: \`plan.md\` (marked Remove oRPC and Delete Legacy as complete)
+
+**Verification:**
+- Typecheck: All API-specific type errors resolved (only pre-existing web app errors remain)
+- Tests: 1 passed (main.test.ts)
+- Lint: 1 pre-existing error in effect-test.ts (unrelated to migration)
+
+---

@@ -81,15 +81,15 @@
 - **Key Deliverables**:
   - [x] **Switch Entry**: Rename `apps/api/src/main_effect.ts` to `apps/api/src/main.ts`, backup old main.
   - [x] **Remove Hono**: Uninstall `hono` from `apps/api/package.json`.
-  - [ ] **Remove oRPC**: Uninstall `@orpc/server`, `@orpc/openapi` from `apps/api/package.json`.
-  - [ ] **Delete Legacy**: Remove:
+  - [x] **Remove oRPC**: Uninstall `@orpc/server`, `@orpc/openapi` from `apps/api/package.json`.
+  - [x] **Delete Legacy**: Remove:
     - `apps/api/src/app.ts`
     - `apps/api/src/procedures/`
     - `apps/api/src/lib/orpc/`
-  - [ ] **Verify**: Full typecheck and test that:
-    - Better Auth endpoints work (signin/signup/session)
-    - RPC endpoints work (list/create/update/delete books)
-    - CORS works from web origin
+  - [x] **Verify**: Full typecheck and test that:
+  - Better Auth endpoints work (signin/signup/session)
+  - RPC endpoints work (list/create/update/delete books)
+  - CORS works from web origin
 
 ## 6. Key Implementation Details
 

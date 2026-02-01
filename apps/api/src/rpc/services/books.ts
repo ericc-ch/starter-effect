@@ -8,7 +8,7 @@ import type {
   BookIdType,
 } from "../schema/books"
 import { NotFoundError, ValidationError } from "../contract/books"
-import type { DB } from "../../lib/db"
+import type { GenericSQLite } from "../../lib/db"
 
 // Domain errors
 export { NotFoundError, ValidationError }
@@ -44,10 +44,12 @@ const tryDrizzle = <T>(
   Effect.tryPromise({
     try: operation,
     catch: () => new NotFoundError({ message: "Database error" }) as never,
-  })
+  }) as Effect.Effect<T, never, never>
 
 // BookRepoLive Layer
-export const BookRepoLive = (db: DB): Layer.Layer<BookRepo, never, never> =>
+export const BookRepoLive = (
+  db: GenericSQLite,
+): Layer.Layer<BookRepo, never, never> =>
   Layer.succeed(BookRepo, {
     getById: (id) =>
       Effect.gen(function* () {
