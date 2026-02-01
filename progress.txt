@@ -6,3 +6,29 @@ Project initialized with Ralph workflow.
 Next: Begin working on first task.
 
 ---
+
+## Session 2026-02-01
+
+### Task Completed: CORS Middleware
+
+**What was done:**
+- Created `apps/api/src/lib/http/cors.ts` with CORS middleware using `@effect/platform`
+- Configured allowed origins, credentials, methods, and headers per plan.md specification
+
+**Decisions made:**
+- Used `HttpMiddleware.cors` from `@effect/platform` as recommended in plan.md
+- Kept the configuration simple and focused on the essential CORS settings
+
+**Blockers encountered:**
+- None for this specific task
+
+**Files changed:**
+- Created: `apps/api/src/lib/http/cors.ts`
+- Modified: `plan.md` (marked CORS Middleware as complete)
+
+**Pre-existing issues noted:**
+- Typecheck shows many errors in legacy Hono/oRPC code (expected during migration)
+- Tests fail due to missing procedure files (organization-members, organizations, users)
+- Lint error in `effect-test.ts` (unrelated to this task)
+
+---
