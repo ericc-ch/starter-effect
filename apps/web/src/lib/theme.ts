@@ -10,7 +10,7 @@ const themeSchema = z.object({
 
 type Theme = z.infer<typeof themeSchema>["mode"]
 
-const STORAGE_KEY = "verion-theme"
+const STORAGE_KEY = "theme"
 
 export const themeCollection = createCollection(
   localStorageCollectionOptions({

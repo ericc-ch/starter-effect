@@ -49,7 +49,7 @@ const dryRun = argv.dryRun
 const remote = argv.remote
 const stage = argv.stage
 const email = argv.email
-const dbName = `verion-db-${stage}`
+const dbName = `starter-effect-db-${stage}`
 
 // Helper: get local SQLite path
 function getLocalDbPath(): string {

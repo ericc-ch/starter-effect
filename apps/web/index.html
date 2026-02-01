@@ -16,7 +16,7 @@
       {
         let theme = "system"
         try {
-          const stored = localStorage.getItem("verion-theme")
+          const stored = localStorage.getItem("theme")
           if (stored) {
             const parsed = JSON.parse(stored)
             theme = parsed["s:preference"]?.data?.mode ?? "system"

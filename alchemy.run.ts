@@ -37,7 +37,7 @@ const apiEnv = apiEnvSchema.parse(process.env)
 const remoteEnv =
   alchemyEnv.ALCHEMY_REMOTE_STATE ? remoteEnvSchema.parse(process.env) : null
 
-const app = await alchemy("verion", {
+const app = await alchemy("starter-effect", {
   password: alchemyEnv.ALCHEMY_PASSWORD,
   stage: alchemyEnv.ALCHEMY_STAGE,
   stateStore: (scope: Scope) =>
