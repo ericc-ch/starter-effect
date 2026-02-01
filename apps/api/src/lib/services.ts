@@ -1,20 +1,20 @@
 import { Schema } from "effect"
-import { createAuth } from "./auth"
+import { makeAuth } from "./auth"
 import { createDB, type DB } from "./db"
-import { EnvSchema, type ParsedEnv } from "./env"
+import { EnvSchema, type EnvType } from "./env"
 
 export type Services = {
-  env: ParsedEnv
+  env: EnvType
   db: DB
-  auth: ReturnType<typeof createAuth>
+  auth: ReturnType<typeof makeAuth>
 }
 
-export function createServices(cloudflareEnv: Env): Services {
+export function createServices(cloudflareEnv: EnvSchema): Services {
   const env = Schema.decodeUnknownSync(EnvSchema)(cloudflareEnv)
   const db = createDB(cloudflareEnv.DB)
   return {
     env,
     db,
-    auth: createAuth(env, db),
+    auth: makeAuth(env, db),
   }
 }

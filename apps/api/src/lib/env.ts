@@ -1,11 +1,11 @@
-import { Schema } from "effect"
+import { Context, Schema } from "effect"
 
-export const EnvSchema = Schema.Struct({
-  API_CORS_ORIGIN: Schema.String.pipe(
+export class EnvSchema extends Schema.Class<EnvSchema>("EnvSchema")({
+  API_CORS_ORIGIN: Schema.URL.pipe(
     Schema.optional,
     Schema.withDefaults({
-      decoding: () => "http://localhost:5173",
-      constructor: () => "http://localhost:5173",
+      decoding: () => new URL("http://localhost:5173"),
+      constructor: () => new URL("http://localhost:5173"),
     }),
   ),
   API_BETTER_AUTH_SECRET: Schema.String.pipe(Schema.minLength(1)),
@@ -16,6 +16,11 @@ export const EnvSchema = Schema.Struct({
       constructor: () => new URL("http://localhost:1337"),
     }),
   ),
-})
+}) {}
 
-export type ParsedEnv = Schema.Schema.Type<typeof EnvSchema>
+export type EnvType = typeof EnvSchema.Type
+
+export class EnvContext extends Context.Tag("api/lib/env/EnvContext")<
+  EnvContext,
+  EnvType
+>() {}

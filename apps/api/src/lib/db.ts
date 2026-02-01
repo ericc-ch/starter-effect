@@ -1,10 +1,19 @@
-import type { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core"
 import { drizzle } from "drizzle-orm/d1"
+import type { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core"
+import { Context } from "effect"
 import { schema } from "shared/schema"
 
-// Generic DB type - works with any SQLite dialect (D1, bun:sqlite, better-sqlite3)
-export type DB = BaseSQLiteDatabase<"sync" | "async", unknown, typeof schema>
+type GenericSQLite = BaseSQLiteDatabase<
+  "sync" | "async",
+  unknown,
+  typeof schema
+>
 
-export function createDB(d1: D1Database): DB {
+export function createDB(d1: D1Database): GenericSQLite {
   return drizzle(d1, { schema })
 }
+
+export class Database extends Context.Tag("api/lib/db/Database")<
+  Database,
+  GenericSQLite
+>() {}
