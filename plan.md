@@ -73,7 +73,7 @@
     - Use `RpcServer.toHttpApp(RootRpcGroup, options)` to create HTTP app
     - Mount with `HttpRouter.mountApp("/rpc", rpcHttpApp)`
     - Provide handler layers: `rpcHttpApp.pipe(Effect.provide(BooksHandlers))`
-  - [ ] **Test Endpoints**: Verify Books CRUD RPCs work via curl or similar.
+  - [x] **Test Endpoints**: Verify Books CRUD RPCs work via curl or similar.
 
 ### Phase 3: Switchover & Cleanup
 
