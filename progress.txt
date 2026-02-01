@@ -66,3 +66,36 @@ Next: Begin working on first task.
 - Lint error in `effect-test.ts` (unrelated to this task)
 
 ---
+
+---
+
+## Session 2026-02-01
+
+### Task Completed: HTTP Router
+
+**What was done:**
+- Created `apps/api/src/http/router.ts` with Effect HTTP router
+- Mounted `/api/auth/*` routes to Better Auth handler (`handleAuthRequest`)
+- Mounted `/rpc/*` routes to Effect RPC server with Books handlers
+- Added health check endpoint at `/` returning `{ status: "ok" }`
+- Used `RpcServer.toHttpApp` to convert RPC group to HTTP app
+- Properly provided `BooksHandlers` layer to the RPC HTTP app
+
+**Decisions made:**
+- Used `HttpRouter.mountApp` for mounting both auth and RPC sub-apps
+- RPC handlers are provided via `Effect.provide(BooksHandlers)` at mount time
+- Health check uses simple `HttpServerResponse.json()` without Effect.gen wrapper
+- Router is created as an Effect that can be used in the main entry point
+
+**Blockers encountered:**
+- Initial confusion about `HttpRouter.get` handler type - needed to return Effect directly, not `Effect.succeed(HttpServerResponse.json())`
+- Understanding that `RpcServer.toHttpApp` returns an Effect that yields an HttpApp, not the HttpApp directly
+
+**Files changed:**
+- Created: `apps/api/src/http/router.ts`
+- Modified: `plan.md` (marked HTTP Router as complete)
+
+**Pre-existing issues noted:**
+- Typecheck shows many errors in legacy Hono/oRPC code (expected during migration)
+- Tests fail due to missing procedure files (organization-members, organizations, users)
+- Lint error in `effect-test.ts` (unrelated to this task)

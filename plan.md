@@ -50,7 +50,7 @@
     - Reads `Cookie` header from `HttpServerRequest`
     - Calls `auth.api.getSession({ headers })`
     - Provides `CurrentUser` Layer (or `Option<CurrentUser>` for optional auth)
-  - [ ] **HTTP Router**: Create `apps/api/src/http/router.ts` that:
+  - [x] **HTTP Router**: Create `apps/api/src/http/router.ts` that:
     - Mounts `/api/auth/*` -> Better Auth handler
     - Mounts `/rpc/*` -> RPC handler (with session middleware)
     - Mounts `/` -> Health check
