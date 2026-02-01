@@ -289,3 +289,32 @@ Next: Begin working on first task.
 - Tests fail due to missing procedure files (organization-members, organizations, users)
 - Lint error in `effect-test.ts` (unrelated to this task)
 - New `main.ts` has no type errors
+
+---
+
+## Session 2026-02-01
+
+### Task Completed: Remove Hono
+
+**What was done:**
+- Removed `hono` dependency from `apps/api/package.json`
+- Package.json now no longer includes the Hono HTTP framework
+
+**Decisions made:**
+- Simple removal of the dependency line from package.json
+- The Effect HTTP server is now the sole HTTP framework in use
+
+**Blockers encountered:**
+- None - straightforward dependency removal
+
+**Files changed:**
+- Modified: `apps/api/package.json` (removed `hono` dependency)
+- Modified: `plan.md` (marked Remove Hono as complete)
+
+**Pre-existing issues noted:**
+- Typecheck shows many errors in legacy Hono/oRPC code (expected during migration - these are in backup and legacy files)
+- Tests fail due to missing procedure files (organization-members, organizations, users)
+- Lint error in `effect-test.ts` (unrelated to this task)
+- All new Effect RPC files have no type errors
+
+---
