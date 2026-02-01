@@ -11,6 +11,14 @@ export class ValidationError extends Schema.TaggedError<ValidationError>(
   "ValidationError",
 )("ValidationError", { message: Schema.String, field: Schema.String }) {}
 
+export class UnauthorizedError extends Schema.TaggedError<UnauthorizedError>(
+  "UnauthorizedError",
+)("UnauthorizedError", { message: Schema.String }) {}
+
+export class ForbiddenError extends Schema.TaggedError<ForbiddenError>(
+  "ForbiddenError",
+)("ForbiddenError", { message: Schema.String }) {}
+
 // Define RPCs
 export const GetBook = Rpc.make("books.get", {
   payload: Schema.Struct({ id: BookId }),
@@ -26,19 +34,19 @@ export const ListBooks = Rpc.make("books.list", {
 export const CreateBook = Rpc.make("books.create", {
   payload: BookInsert,
   success: Book,
-  error: Schema.Union(ValidationError, NotFoundError),
+  error: Schema.Union(ValidationError, NotFoundError, UnauthorizedError),
 })
 
 export const UpdateBook = Rpc.make("books.update", {
   payload: Schema.Struct({ id: BookId, data: BookUpdate }),
   success: Book,
-  error: NotFoundError,
+  error: Schema.Union(NotFoundError, UnauthorizedError),
 })
 
 export const DeleteBook = Rpc.make("books.delete", {
   payload: Schema.Struct({ id: BookId }),
   success: Book,
-  error: NotFoundError,
+  error: Schema.Union(NotFoundError, UnauthorizedError),
 })
 
 // Group them

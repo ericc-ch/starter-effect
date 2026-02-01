@@ -9,7 +9,7 @@
     "dev": "alchemy dev",
     "format": "prettier --write .",
     "lint": "oxlint --type-aware",
-    "prepare": "simple-git-hooks && konteks sync",
+    "prepare": "simple-git-hooks && effect-language-service patch && konteks sync",
     "test": "vitest",
     "typecheck": "tsc --build"
   },
