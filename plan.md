@@ -69,7 +69,7 @@
     - Uses `RpcServer.toHttpApp()` with the root RPC group
     - Returns `Effect.Effect<HttpApp.Default, never, ...>` that can be mounted
     - Handler layers (`BooksHandlers`) will be provided at mount time
-  - [ ] **HTTP RPC Handler**: Wire RPC server into HTTP router at `/rpc/*` path:
+  - [x] **HTTP RPC Handler**: Wire RPC server into HTTP router at `/rpc/*` path:
     - Use `RpcServer.toHttpApp(RootRpcGroup, options)` to create HTTP app
     - Mount with `HttpRouter.mountApp("/rpc", rpcHttpApp)`
     - Provide handler layers: `rpcHttpApp.pipe(Effect.provide(BooksHandlers))`
