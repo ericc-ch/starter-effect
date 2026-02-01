@@ -168,3 +168,33 @@ Next: Begin working on first task.
 - Tests fail due to missing procedure files (organization-members, organizations, users)
 - Lint error in `effect-test.ts` (unrelated to this task)
 - `main_effect.ts` and `http.ts` have no type errors and are ready for use
+
+---
+
+## Session 2026-02-01
+
+### Task Completed: Root RPC Group
+
+**What was done:**
+- Created `apps/api/src/rpc/main.ts` that combines all RPC groups into a single `RpcGroup`
+- Used `RpcGroup.make().merge(BooksRpcGroup)` pattern to create the root group
+- Exported `RootRpcGroup` and `RootRpcContract` type for client usage
+
+**Decisions made:**
+- Used `.merge()` method instead of passing group to `make()` since `RpcGroup.make()` expects individual RPCs, not other groups
+- Created empty group with `RpcGroup.make()` then merged BooksRpcGroup into it
+- Structure allows easy addition of more RPC groups in the future
+
+**Blockers encountered:**
+- Initial attempt to pass `BooksRpcGroup` directly to `RpcGroup.make()` failed - learned that `make()` expects individual RPCs
+- Found the `.merge()` method by reading the Effect RPC source code in `.context/effect/packages/rpc/src/RpcGroup.ts`
+
+**Files changed:**
+- Created: `apps/api/src/rpc/main.ts`
+- Modified: `plan.md` (marked Root RPC Group as complete)
+
+**Pre-existing issues noted:**
+- Typecheck shows many errors in legacy Hono/oRPC code (expected during migration)
+- Tests fail due to missing procedure files (organization-members, organizations, users)
+- Lint error in `effect-test.ts` (unrelated to this task)
+- `apps/api/src/rpc/main.ts` has no type errors
