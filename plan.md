@@ -65,7 +65,7 @@
 - **Goal**: Wire up existing Effect RPC handlers to the HTTP server.
 - **Key Deliverables**:
   - [x] **Root RPC Group**: Create `apps/api/src/rpc/main.ts` that combines all RPC groups (currently just `BooksRpcGroup`) into a single `RpcGroup`.
-  - [ ] **RPC Server Layer**: Create `apps/api/src/rpc/server.ts` that:
+  - [x] **RPC Server Layer**: Create `apps/api/src/rpc/server.ts` that:
     - Uses `RpcServer.toHttpApp()` with the root RPC group
     - Returns `Effect.Effect<HttpApp.Default, never, ...>` that can be mounted
     - Handler layers (`BooksHandlers`) will be provided at mount time

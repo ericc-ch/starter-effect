@@ -198,3 +198,36 @@ Next: Begin working on first task.
 - Tests fail due to missing procedure files (organization-members, organizations, users)
 - Lint error in `effect-test.ts` (unrelated to this task)
 - `apps/api/src/rpc/main.ts` has no type errors
+
+---
+
+## Session 2026-02-01
+
+### Task Completed: RPC Server Layer
+
+**What was done:**
+- Created `apps/api/src/rpc/server.ts` with `createRpcHttpApp` function
+- Uses `RpcServer.toHttpApp()` with `RootRpcGroup` to create HTTP app
+- Returns `Effect<HttpApp.Default>` that can be mounted in the router
+- Updated `apps/api/src/http/router.ts` to use the new server module instead of inline RPC creation
+- Handler layers (`BooksHandlers`) are still provided at mount time in the router
+
+**Decisions made:**
+- Created a dedicated server.ts module to separate RPC server creation from routing logic
+- Used `RootRpcGroup` instead of `BooksRpcGroup` directly to support future RPC group additions
+- Kept handler layer provision in the router to maintain flexibility
+- Exported `RpcHttpAppEffect` type alias for potential future use
+
+**Blockers encountered:**
+- None - straightforward implementation following existing patterns
+
+**Files changed:**
+- Created: `apps/api/src/rpc/server.ts`
+- Modified: `apps/api/src/http/router.ts` (updated to use server.ts)
+- Modified: `plan.md` (marked RPC Server Layer as complete)
+
+**Pre-existing issues noted:**
+- Typecheck shows many errors in legacy Hono/oRPC code (expected during migration)
+- Tests fail due to missing procedure files (organization-members, organizations, users)
+- Lint error in `effect-test.ts` (unrelated to this task)
+- `apps/api/src/rpc/server.ts` and updated `router.ts` have no type errors

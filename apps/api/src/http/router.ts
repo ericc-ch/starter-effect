@@ -1,16 +1,12 @@
 import { HttpRouter, HttpServerResponse } from "@effect/platform"
-import { RpcServer } from "@effect/rpc"
 import { Effect } from "effect"
 import { handleAuthRequest } from "../lib/auth/http"
-import { BooksRpcGroup } from "../rpc/contract/books"
 import { BooksHandlers } from "../rpc/handlers/books"
+import { createRpcHttpApp } from "../rpc/server"
 
 export const createRouter = Effect.gen(function* () {
-  // Create RPC HttpApp from the RPC group
-  const rpcHttpApp = yield* RpcServer.toHttpApp(BooksRpcGroup, {
-    disableTracing: false,
-    spanPrefix: "RpcServer",
-  })
+  // Create RPC HttpApp from the root RPC group
+  const rpcHttpApp = yield* createRpcHttpApp
 
   // Provide the handler implementations to the RPC app
   const rpcHttpAppWithHandlers = rpcHttpApp.pipe(Effect.provide(BooksHandlers))
