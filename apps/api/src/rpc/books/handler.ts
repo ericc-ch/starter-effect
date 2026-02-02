@@ -1,42 +1,14 @@
-import { Rpc, RpcGroup } from "@effect/rpc"
-import { Effect, Match, ParseResult, pipe, Schema } from "effect"
 import { eq } from "drizzle-orm"
+import { Effect, Layer } from "effect"
 import {
-  Book,
   BookId,
   BookInsert,
-  BookUpdate,
   books as booksTable,
+  BookUpdate,
 } from "shared/schema"
-import { NotFoundError, ValidationError, UnauthorizedError } from "../errors"
 import { Database } from "../../lib/db"
-
-export class BooksRpcGroup extends RpcGroup.make(
-  Rpc.make("BookGet", {
-    payload: Schema.Struct({ id: BookId }),
-    success: Book,
-    error: Schema.Union(NotFoundError, ValidationError),
-  }),
-  Rpc.make("BooksList", {
-    payload: Schema.Struct({}),
-    success: Schema.Struct({ data: Schema.Array(Book) }),
-  }),
-  Rpc.make("BooksCreate", {
-    payload: BookInsert,
-    success: Book,
-    error: Schema.Union(ValidationError, NotFoundError, UnauthorizedError),
-  }),
-  Rpc.make("BooksUpdate", {
-    payload: Schema.Struct({ id: BookId, data: BookUpdate }),
-    success: Book,
-    error: Schema.Union(NotFoundError, UnauthorizedError),
-  }),
-  Rpc.make("BooksDelete", {
-    payload: Schema.Struct({ id: BookId }),
-    success: Book,
-    error: Schema.Union(NotFoundError, UnauthorizedError),
-  }),
-) {}
+import { NotFoundError } from "../errors"
+import { BooksRpcGroup } from "./contract"
 
 export class BookRepository extends Effect.Service<BookRepository>()(
   "api/rpc/groups/books/BookRepository",
@@ -56,25 +28,20 @@ export class BookRepository extends Effect.Service<BookRepository>()(
               message: `Book with id ${id} not found`,
             })
 
-          return yield* pipe(book, Schema.decodeUnknown(Book))
+          return book
         }),
 
         list: Effect.gen(function* () {
           const data = yield* Effect.promise(() => db.select().from(booksTable))
-          return { data: yield* Schema.decodeUnknown(Schema.Array(Book))(data) }
+          return { data }
         }),
 
         create: Effect.fn(function* (data: typeof BookInsert.Type) {
           const inserted = yield* Effect.promise(() =>
             db.insert(booksTable).values(data).returning(),
           )
-          const book = inserted.at(0)
-          if (!book) {
-            return yield* new NotFoundError({
-              message: "Failed to create book",
-            })
-          }
-          return yield* Schema.decodeUnknown(Book)(book)
+          const book = inserted.at(0)!
+          return book
         }),
 
         update: Effect.fn(function* (
@@ -95,7 +62,8 @@ export class BookRepository extends Effect.Service<BookRepository>()(
               message: `Book with id ${id} not found`,
             })
           }
-          return yield* Schema.decodeUnknown(Book)(book)
+
+          return book
         }),
 
         remove: Effect.fn(function* (id: typeof BookId.Type) {
@@ -112,7 +80,8 @@ export class BookRepository extends Effect.Service<BookRepository>()(
               message: `Book with id ${id} not found`,
             })
           }
-          return yield* Schema.decodeUnknown(Book)(book)
+
+          return book
         }),
       }
     }),
@@ -123,22 +92,13 @@ export const BooksHandlers = BooksRpcGroup.toLayer({
   BookGet: (payload) =>
     Effect.gen(function* () {
       const repo = yield* BookRepository
-      return yield* repo.get(payload.id).pipe(
-        Effect.catchTag(
-          "ParseError",
-          (err) =>
-            new ValidationError({
-              message: err.message,
-              cause: err,
-            }),
-        ),
-      )
+      return yield* repo.get(payload.id)
     }),
 
   BooksList: () =>
     Effect.gen(function* () {
       const repo = yield* BookRepository
-      return yield* repo.list()
+      return yield* repo.list
     }),
 
   BooksCreate: (payload) =>
@@ -158,4 +118,4 @@ export const BooksHandlers = BooksRpcGroup.toLayer({
       const repo = yield* BookRepository
       return yield* repo.remove(payload.id)
     }),
-})
+}).pipe(Layer.provide(BookRepository.Default))

@@ -1,4 +1,4 @@
-import { ParseResult, Schema } from "effect"
+import { Schema } from "effect"
 
 export class NotFoundError extends Schema.TaggedError<NotFoundError>()(
   "NotFoundError",
@@ -7,7 +7,7 @@ export class NotFoundError extends Schema.TaggedError<NotFoundError>()(
 
 export class ValidationError extends Schema.TaggedError<ValidationError>()(
   "ValidationError",
-  { message: Schema.String, cause: ParseResult.ParseError },
+  { message: Schema.String },
 ) {}
 
 export class UnauthorizedError extends Schema.TaggedError<UnauthorizedError>()(
