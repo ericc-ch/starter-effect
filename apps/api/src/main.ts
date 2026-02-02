@@ -11,9 +11,8 @@ import { Effect, Layer, Schema } from "effect"
 import { Auth } from "./lib/auth/main"
 import { createDB, Database } from "./lib/db"
 import { EnvContext, EnvSchema } from "./lib/env"
-import { BooksHandlers } from "./rpc/handlers/books"
+import { BooksHandlers, BookRepo } from "./features/books"
 import { RootRpcGroup } from "./rpc/main"
-import { BookRepoLive } from "./rpc/services/books"
 
 export const corsMiddleware = (origin: string) =>
   HttpMiddleware.cors({
@@ -58,14 +57,13 @@ const authLayer = Auth.Default.pipe(
   Layer.provide(dbLayer),
 )
 
-// BookRepo layer depends on Database (via the db parameter in BookRepoLive)
-// Since BookRepoLive takes db directly, it's already satisfied
-const bookRepoLayer = BookRepoLive(db)
+// BookRepo layer depends on Database
+const bookRepoLayer = BookRepo.Default.pipe(Layer.provide(dbLayer))
 
 // BooksHandlers layer depends on BookRepo
 const booksHandlersLayer = BooksHandlers.pipe(Layer.provide(bookRepoLayer))
 
-// Merge all layers - build from the bottom up
+// Merge all layers
 const appLayer = Layer.mergeAll(
   envContextLayer,
   dbLayer,

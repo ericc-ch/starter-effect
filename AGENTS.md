@@ -10,7 +10,7 @@ Fight entropy. Leave the codebase better than you found it.
 
 ## Workflow
 
-Always explore the codebase first using grep/glob/read tools to understand the structure, then explore the .context/ directory to find relevant library source code, then load relevant skill when working on something.
+Always explore the codebase first using grep/glob/read tools to understand the structure, then explore the .context/ directory to find relevant library source code. ONLY use documentation tools (documentation_resolve-library-id, documentation_query-docs) if the .context/ directory does not contain the library you need. Then load relevant skill when working on something.
 
 ## Architecture
 
@@ -60,7 +60,7 @@ Always break down large changes into multiple focused atomic commits.
 
 ## Coding Standards
 
-- Minimize explicit types - Let TypeScript infer types wherever possible; only annotate when inference fails or for public API boundaries
+- Minimize explicit types - Let TypeScript infer types wherever possible; only annotate when inference fails or for public API boundaries. With Effect, you almost never need explicit types - trust the inference.
 - No semicolons - Prettier enforces semi: false
 - Strict TypeScript - strict, noUncheckedIndexedAccess, exactOptionalPropertyTypes enabled
 - ESM only - Use import/export, no CommonJS

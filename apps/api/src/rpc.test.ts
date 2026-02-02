@@ -1,13 +1,11 @@
 import { Headers } from "@effect/platform"
 import { Effect, Layer } from "effect"
 import { beforeEach, describe, expect, it } from "vitest"
-import { BooksRpcGroup, NotFoundError } from "./rpc/contract/books"
-import { BooksHandlers } from "./rpc/handlers/books"
-import { BookRepo } from "./rpc/services/books"
-import type { BookType, BookUpdateType } from "./rpc/schema/books"
+import { Book, BookRepo, BooksHandlers, BooksRpcGroup } from "./features/books"
+import { NotFoundError } from "./features/errors"
 
 // Mock book data - reset before each test
-let mockBooks: BookType[] = []
+let mockBooks: (typeof Book.Type)[] = []
 
 const resetMockBooks = () => {
   mockBooks = [
@@ -16,63 +14,69 @@ const resetMockBooks = () => {
   ]
 }
 
-// Create a mock BookRepo layer
-const MockBookRepoLive = Layer.succeed(BookRepo, {
-  getById: (id: number) =>
-    Effect.gen(function* () {
-      const book = mockBooks.find((b) => b.id === id)
-      if (!book) {
-        return yield* new NotFoundError({
-          message: `Book with id ${id} not found`,
-        })
-      }
-      return book
-    }),
+// Create a mock BookRepo layer using Layer.succeed with instantiated service
+const MockBookRepoLive = Layer.succeed(
+  BookRepo,
+  new BookRepo({
+    getById: (id: number) =>
+      Effect.gen(function* () {
+        const book = mockBooks.find((b) => b.id === id)
+        if (!book) {
+          return yield* new NotFoundError({
+            message: `Book with id ${id} not found`,
+          })
+        }
+        return book
+      }),
 
-  list: () => Effect.succeed({ data: mockBooks }),
+    list: () => Effect.succeed({ data: mockBooks }),
 
-  create: (data: { title: string; author: string }) =>
-    Effect.sync(() => {
-      const newBook: BookType = {
-        id: mockBooks.length + 1,
-        title: data.title,
-        author: data.author,
-      }
-      mockBooks.push(newBook)
-      return newBook
-    }),
+    create: (data: { title: string; author: string }) =>
+      Effect.sync(() => {
+        const newBook = {
+          id: mockBooks.length + 1,
+          title: data.title,
+          author: data.author,
+        }
+        mockBooks.push(newBook)
+        return newBook
+      }),
 
-  update: (id: number, data: BookUpdateType) =>
-    Effect.gen(function* () {
-      const bookIndex = mockBooks.findIndex((b) => b.id === id)
-      if (bookIndex === -1) {
-        return yield* new NotFoundError({
-          message: `Book with id ${id} not found`,
-        })
-      }
-      const currentBook = mockBooks[bookIndex]!
-      const updatedBook: BookType = {
-        id: currentBook.id,
-        title: data.title ?? currentBook.title,
-        author: data.author ?? currentBook.author,
-      }
-      mockBooks[bookIndex] = updatedBook
-      return updatedBook
-    }),
+    update: (
+      id: number,
+      data: { title?: string | undefined; author?: string | undefined },
+    ) =>
+      Effect.gen(function* () {
+        const bookIndex = mockBooks.findIndex((b) => b.id === id)
+        if (bookIndex === -1) {
+          return yield* new NotFoundError({
+            message: `Book with id ${id} not found`,
+          })
+        }
+        const currentBook = mockBooks[bookIndex]!
+        const updatedBook = {
+          id: currentBook.id,
+          title: data.title ?? currentBook.title,
+          author: data.author ?? currentBook.author,
+        }
+        mockBooks[bookIndex] = updatedBook
+        return updatedBook
+      }),
 
-  remove: (id: number) =>
-    Effect.gen(function* () {
-      const bookIndex = mockBooks.findIndex((b) => b.id === id)
-      if (bookIndex === -1) {
-        return yield* new NotFoundError({
-          message: `Book with id ${id} not found`,
-        })
-      }
-      const deletedBook = mockBooks[bookIndex]!
-      mockBooks.splice(bookIndex, 1)
-      return deletedBook
-    }),
-})
+    remove: (id: number) =>
+      Effect.gen(function* () {
+        const bookIndex = mockBooks.findIndex((b) => b.id === id)
+        if (bookIndex === -1) {
+          return yield* new NotFoundError({
+            message: `Book with id ${id} not found`,
+          })
+        }
+        const deletedBook = mockBooks[bookIndex]!
+        mockBooks.splice(bookIndex, 1)
+        return deletedBook
+      }),
+  }),
+)
 
 describe("Books RPC", () => {
   beforeEach(() => {
