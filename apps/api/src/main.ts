@@ -5,12 +5,12 @@ import {
   HttpServerResponse,
 } from "@effect/platform"
 import { env } from "cloudflare:workers"
-import { Effect } from "effect"
+import { Effect, Layer } from "effect"
 import { Auth } from "./lib/auth/main"
-import { makeService } from "./lib/services"
-import { RootRpcHandler } from "./rpc/handler"
+import { makeService } from "./lib/service"
+import { RpcHandlerLive, RootRpcHandler } from "./rpc/handler"
 
-export const handleAuthRequest = Effect.gen(function* () {
+const handleAuthRequest = Effect.gen(function* () {
   const request = yield* HttpServerRequest.HttpServerRequest
   const auth = yield* Auth
 
@@ -20,15 +20,31 @@ export const handleAuthRequest = Effect.gen(function* () {
   return yield* HttpServerResponse.fromWeb(response)
 })
 
-const app = Effect.gen(function* () {
+const ServiceLive = makeService(env)
+const AppLive = RpcHandlerLive.pipe(Layer.provide(ServiceLive))
+
+// Build the router - this creates the HttpApp
+const makeHttpApp = Effect.gen(function* () {
   const rpcHandler = yield* RootRpcHandler
 
-  return yield* HttpRouter.empty.pipe(
+  const router = HttpRouter.empty.pipe(
     HttpRouter.get("/", HttpServerResponse.json({ status: "ok" })),
     HttpRouter.mountApp("/api/auth", handleAuthRequest),
     HttpRouter.mountApp("/rpc", rpcHandler),
-    HttpRouter.toHttpApp,
   )
-}).pipe(Effect.provide(makeService(env)), Effect.scoped)
 
-export default app.pipe(Effect.andThen(HttpApp.toWebHandler))
+  return yield* HttpRouter.toHttpApp(router)
+})
+
+// Run the construction effect - this satisfies RPC handler requirements
+// The returned HttpApp still needs Auth for handleAuthRequest
+const httpApp = makeHttpApp.pipe(
+  Effect.provide(AppLive),
+  Effect.scoped,
+  Effect.runSync,
+)
+
+// Create the handler with Auth layer provided at request time
+const { handler } = HttpApp.toWebHandlerLayer(httpApp, ServiceLive)
+
+export default handler

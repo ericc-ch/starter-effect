@@ -1,13 +1,12 @@
 import { RpcSerialization, RpcServer } from "@effect/rpc"
-import { Effect, Layer } from "effect"
+import { Layer } from "effect"
 import { BooksHandlers } from "./books/handler"
 import { RootRpcGroup } from "./contract"
 
-const RpcHandlerLive = Layer.empty.pipe(
+export const RpcHandlerLive = Layer.empty.pipe(
   Layer.merge(RpcSerialization.layerJsonRpc()),
   Layer.merge(BooksHandlers),
 )
 
-export const RootRpcHandler = RpcServer.toHttpApp(RootRpcGroup).pipe(
-  Effect.provide(RpcHandlerLive),
-)
+// Don't provide layers here - let main.ts provide everything
+export const RootRpcHandler = RpcServer.toHttpApp(RootRpcGroup)
