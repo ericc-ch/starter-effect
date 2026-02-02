@@ -11,7 +11,7 @@ import { Effect, Layer, Schema } from "effect"
 import { Auth } from "./lib/auth/main"
 import { createDB, Database } from "./lib/db"
 import { EnvContext, EnvSchema } from "./lib/env"
-import { BooksHandlers, BookRepo } from "./features/books"
+import { BooksHandlers, BookRepository } from "./rpc/groups/books"
 import { RootRpcGroup } from "./rpc/main"
 
 export const corsMiddleware = (origin: string) =>
@@ -57,10 +57,10 @@ const authLayer = Auth.Default.pipe(
   Layer.provide(dbLayer),
 )
 
-// BookRepo layer depends on Database
-const bookRepoLayer = BookRepo.Default.pipe(Layer.provide(dbLayer))
+// BookRepository layer depends on Database
+const bookRepoLayer = BookRepository.Default.pipe(Layer.provide(dbLayer))
 
-// BooksHandlers layer depends on BookRepo
+// BooksHandlers layer depends on BookRepository
 const booksHandlersLayer = BooksHandlers.pipe(Layer.provide(bookRepoLayer))
 
 // Merge all layers

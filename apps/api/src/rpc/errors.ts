@@ -1,17 +1,21 @@
-import { Schema } from "effect"
+import { ParseResult, Schema } from "effect"
 
-export class NotFoundError extends Schema.TaggedError<NotFoundError>(
+export class NotFoundError extends Schema.TaggedError<NotFoundError>()(
   "NotFoundError",
-)("NotFoundError", { message: Schema.String }) {}
+  { message: Schema.String },
+) {}
 
-export class ValidationError extends Schema.TaggedError<ValidationError>(
+export class ValidationError extends Schema.TaggedError<ValidationError>()(
   "ValidationError",
-)("ValidationError", { message: Schema.String, field: Schema.String }) {}
+  { message: Schema.String, cause: ParseResult.ParseError },
+) {}
 
-export class UnauthorizedError extends Schema.TaggedError<UnauthorizedError>(
+export class UnauthorizedError extends Schema.TaggedError<UnauthorizedError>()(
   "UnauthorizedError",
-)("UnauthorizedError", { message: Schema.String }) {}
+  { message: Schema.String },
+) {}
 
-export class ForbiddenError extends Schema.TaggedError<ForbiddenError>(
+export class ForbiddenError extends Schema.TaggedError<ForbiddenError>()(
   "ForbiddenError",
-)("ForbiddenError", { message: Schema.String }) {}
+  { message: Schema.String },
+) {}

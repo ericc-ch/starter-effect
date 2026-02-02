@@ -1,8 +1,13 @@
 import { Headers } from "@effect/platform"
 import { Effect, Layer } from "effect"
 import { beforeEach, describe, expect, it } from "vitest"
-import { Book, BookRepo, BooksHandlers, BooksRpcGroup } from "./features/books"
-import { NotFoundError } from "./features/errors"
+import {
+  Book,
+  BookRepository,
+  BooksHandlers,
+  BooksRpcGroup,
+} from "./rpc/groups/books"
+import { NotFoundError } from "./rpc/errors"
 
 // Mock book data - reset before each test
 let mockBooks: (typeof Book.Type)[] = []
@@ -14,11 +19,11 @@ const resetMockBooks = () => {
   ]
 }
 
-// Create a mock BookRepo layer using Layer.succeed with instantiated service
-const MockBookRepoLive = Layer.succeed(
-  BookRepo,
-  new BookRepo({
-    getById: (id: number) =>
+// Create a mock BookRepository layer using Layer.succeed with instantiated service
+const MockBookRepositoryLive = Layer.succeed(
+  BookRepository,
+  BookRepository.of({
+    get: (id: number) =>
       Effect.gen(function* () {
         const book = mockBooks.find((b) => b.id === id)
         if (!book) {
@@ -29,7 +34,7 @@ const MockBookRepoLive = Layer.succeed(
         return book
       }),
 
-    list: () => Effect.succeed({ data: mockBooks }),
+    list: Effect.succeed({ data: mockBooks }),
 
     create: (data: { title: string; author: string }) =>
       Effect.sync(() => {
@@ -86,9 +91,9 @@ describe("Books RPC", () => {
   it("should list books", async () => {
     const result = await Effect.runPromise(
       Effect.gen(function* () {
-        const handler = yield* BooksRpcGroup.accessHandler("books.list").pipe(
+        const handler = yield* BooksRpcGroup.accessHandler("BooksList").pipe(
           Effect.provide(BooksHandlers),
-          Effect.provide(MockBookRepoLive),
+          Effect.provide(MockBookRepositoryLive),
         )
         return yield* handler({}, Headers.empty)
       }),
@@ -101,9 +106,9 @@ describe("Books RPC", () => {
   it("should get a book by id", async () => {
     const result = await Effect.runPromise(
       Effect.gen(function* () {
-        const handler = yield* BooksRpcGroup.accessHandler("books.get").pipe(
+        const handler = yield* BooksRpcGroup.accessHandler("BookGet").pipe(
           Effect.provide(BooksHandlers),
-          Effect.provide(MockBookRepoLive),
+          Effect.provide(MockBookRepositoryLive),
         )
         return yield* handler({ id: 1 }, Headers.empty)
       }),
@@ -116,9 +121,9 @@ describe("Books RPC", () => {
   it("should create a book", async () => {
     const result = await Effect.runPromise(
       Effect.gen(function* () {
-        const handler = yield* BooksRpcGroup.accessHandler("books.create").pipe(
+        const handler = yield* BooksRpcGroup.accessHandler("BooksCreate").pipe(
           Effect.provide(BooksHandlers),
-          Effect.provide(MockBookRepoLive),
+          Effect.provide(MockBookRepositoryLive),
         )
         return yield* handler(
           { title: "New Book", author: "New Author" },
@@ -135,9 +140,9 @@ describe("Books RPC", () => {
   it("should update a book", async () => {
     const result = await Effect.runPromise(
       Effect.gen(function* () {
-        const handler = yield* BooksRpcGroup.accessHandler("books.update").pipe(
+        const handler = yield* BooksRpcGroup.accessHandler("BooksUpdate").pipe(
           Effect.provide(BooksHandlers),
-          Effect.provide(MockBookRepoLive),
+          Effect.provide(MockBookRepositoryLive),
         )
         return yield* handler(
           { id: 1, data: { title: "Updated Title" } },
@@ -154,9 +159,9 @@ describe("Books RPC", () => {
   it("should delete a book", async () => {
     const result = await Effect.runPromise(
       Effect.gen(function* () {
-        const handler = yield* BooksRpcGroup.accessHandler("books.delete").pipe(
+        const handler = yield* BooksRpcGroup.accessHandler("BooksDelete").pipe(
           Effect.provide(BooksHandlers),
-          Effect.provide(MockBookRepoLive),
+          Effect.provide(MockBookRepositoryLive),
         )
         return yield* handler({ id: 2 }, Headers.empty)
       }),
@@ -169,9 +174,9 @@ describe("Books RPC", () => {
   it("should return NotFoundError for non-existent book", async () => {
     const result = await Effect.runPromise(
       Effect.gen(function* () {
-        const handler = yield* BooksRpcGroup.accessHandler("books.get").pipe(
+        const handler = yield* BooksRpcGroup.accessHandler("BookGet").pipe(
           Effect.provide(BooksHandlers),
-          Effect.provide(MockBookRepoLive),
+          Effect.provide(MockBookRepositoryLive),
         )
         return yield* Effect.exit(handler({ id: 999 }, Headers.empty))
       }),
