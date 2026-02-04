@@ -1,12 +1,14 @@
+import { HttpLayerRouter } from "@effect/platform"
 import { RpcSerialization, RpcServer } from "@effect/rpc"
-import { Layer } from "effect"
+import { Effect, Layer } from "effect"
 import { BooksHandlers } from "./books/handler"
 import { RootRpcGroup } from "./contract"
 
-export const RpcHandlerLive = Layer.empty.pipe(
-  Layer.merge(RpcSerialization.layerJsonRpc()),
-  Layer.merge(BooksHandlers),
-)
+export const RpcSerializationLive = RpcSerialization.layerJsonRpc()
 
-// Don't provide layers here - let main.ts provide everything
-export const RootRpcHandler = RpcServer.toHttpApp(RootRpcGroup)
+export const RpcRoutes = HttpLayerRouter.use((router) =>
+  Effect.gen(function* () {
+    const httpApp = yield* RpcServer.toHttpApp(RootRpcGroup)
+    yield* router.add("POST", "/rpc/*", httpApp)
+  }),
+).pipe(Layer.provide(RpcSerializationLive), Layer.provide(BooksHandlers))

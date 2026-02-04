@@ -1,16 +1,30 @@
 import {
-  HttpApp,
-  HttpRouter,
+  HttpLayerRouter,
   HttpServerRequest,
   HttpServerResponse,
 } from "@effect/platform"
 import { env } from "cloudflare:workers"
-import { Effect, Layer } from "effect"
+import { drizzle } from "drizzle-orm/d1"
+import { Effect, Layer, Schema } from "effect"
+import { schema } from "shared/schema"
 import { Auth } from "./lib/auth/main"
-import { makeService } from "./lib/service"
-import { RpcHandlerLive, RootRpcHandler } from "./rpc/handler"
+import { Database } from "./lib/db"
+import { EnvContext, EnvSchema } from "./lib/env"
+import { RpcRoutes } from "./rpc/handler"
 
-const handleAuthRequest = Effect.gen(function* () {
+const EnvLive = Layer.effect(EnvContext, Schema.decodeUnknown(EnvSchema)(env))
+const DatabaseLive = Layer.sync(Database, () => drizzle(env.DB, { schema }))
+const ServicesLive = Layer.merge(EnvLive, DatabaseLive)
+
+const HealthRoute = HttpLayerRouter.use((router) =>
+  router.add(
+    "GET",
+    "/",
+    HttpServerResponse.text("I'm FINE. Thanks for asking. Finally."),
+  ),
+)
+
+export const handleAuthRequest = Effect.gen(function* () {
   const request = yield* HttpServerRequest.HttpServerRequest
   const auth = yield* Auth
 
@@ -20,31 +34,14 @@ const handleAuthRequest = Effect.gen(function* () {
   return yield* HttpServerResponse.fromWeb(response)
 })
 
-const ServiceLive = makeService(env)
-const AppLive = RpcHandlerLive.pipe(Layer.provide(ServiceLive))
+const AuthRoutes = HttpLayerRouter.use((router) =>
+  router.add("*", "/api/auth/*", handleAuthRequest),
+).pipe(Layer.provide(Auth.Default))
 
-// Build the router - this creates the HttpApp
-const makeHttpApp = Effect.gen(function* () {
-  const rpcHandler = yield* RootRpcHandler
-
-  const router = HttpRouter.empty.pipe(
-    HttpRouter.get("/", HttpServerResponse.json({ status: "ok" })),
-    HttpRouter.mountApp("/api/auth", handleAuthRequest),
-    HttpRouter.mountApp("/rpc", rpcHandler),
-  )
-
-  return yield* HttpRouter.toHttpApp(router)
-})
-
-// Run the construction effect - this satisfies RPC handler requirements
-// The returned HttpApp still needs Auth for handleAuthRequest
-const httpApp = makeHttpApp.pipe(
-  Effect.provide(AppLive),
-  Effect.scoped,
-  Effect.runSync,
+const AppLive = Layer.mergeAll(HealthRoute, AuthRoutes, RpcRoutes).pipe(
+  Layer.provide(ServicesLive),
 )
 
-// Create the handler with Auth layer provided at request time
-const { handler } = HttpApp.toWebHandlerLayer(httpApp, ServiceLive)
+const { handler } = HttpLayerRouter.toWebHandler(AppLive)
 
 export default handler
