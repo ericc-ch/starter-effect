@@ -1,36 +1,47 @@
 import { Toaster } from "@/components/sonner"
 import { ThemeSync } from "@/components/theme-sync"
-import { TanStackDevtools } from "@tanstack/react-devtools"
-import { Outlet, createRootRoute } from "@tanstack/react-router"
+import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
-import { useEffect } from "react"
+import type React from "react"
+import globalCss from "../global.css?url"
 
 export const Route = createRootRoute({
-  component: () => {
-    useEffect(() => {
-      if (import.meta.env.DEV) {
-        const script = document.createElement("script")
-        script.src = "https://unpkg.com/react-scan/dist/auto.global.js"
-        document.head.appendChild(script)
-      }
-    }, [])
+  head: () => ({
+    meta: [
+      {
+        charSet: "utf-8",
+      },
+      {
+        name: "viewport",
+        content: "width=device-width, initial-scale=1",
+      },
+      {
+        title: "Starter Effect",
+      },
+    ],
+    links: [
+      {
+        rel: "stylesheet",
+        href: globalCss,
+      },
+    ],
+  }),
+  shellComponent: RootDocument,
+})
 
-    return (
-      <>
-        <Outlet />
+function RootDocument({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        {children}
         <ThemeSync />
         <Toaster expand richColors />
-        {import.meta.env.DEV && (
-          <TanStackDevtools
-            plugins={[
-              {
-                name: "Tanstack Router",
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-            ]}
-          />
-        )}
-      </>
-    )
-  },
-})
+        {import.meta.env.DEV && <TanStackRouterDevtoolsPanel />}
+        <Scripts />
+      </body>
+    </html>
+  )
+}

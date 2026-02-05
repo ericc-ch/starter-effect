@@ -1,23 +1,26 @@
 import tailwindcss from "@tailwindcss/vite"
-import { tanstackRouter } from "@tanstack/router-plugin/vite"
-import react from "@vitejs/plugin-react"
-import alchemy from "alchemy/cloudflare/vite"
+import { tanstackStart } from "@tanstack/react-start/plugin/vite"
+import viteReact from "@vitejs/plugin-react"
+import alchemy from "alchemy/cloudflare/tanstack-start"
 import path from "node:path"
 import { defineConfig } from "vite"
+import viteTsConfigPaths from "vite-tsconfig-paths"
 
-export default defineConfig({
+const config = defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
   plugins: [
-    tanstackRouter({
-      target: "react",
-      autoCodeSplitting: true,
+    viteTsConfigPaths({
+      projects: ["./tsconfig.json"],
     }),
-    react(),
     tailwindcss(),
     alchemy(),
+    tanstackStart(),
+    viteReact(),
   ],
 })
+
+export default config

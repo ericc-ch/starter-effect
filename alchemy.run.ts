@@ -1,6 +1,6 @@
 import alchemy, { type Scope } from "alchemy"
 import { CloudflareStateStore, FileSystemStateStore } from "alchemy/state"
-import { D1Database, Vite, Worker } from "alchemy/cloudflare"
+import { D1Database, Worker, TanStackStart } from "alchemy/cloudflare"
 import { Exec } from "alchemy/os"
 import { config } from "dotenv"
 import { z } from "zod"
@@ -67,9 +67,9 @@ export const api = await Worker("api", {
   },
 })
 
-export const web = await Vite("web", {
-  cwd: "./apps/web/",
-  assets: "./dist/client/",
+export const web = await TanStackStart("web", {
+  cwd: "./apps/web",
+  compatibility: "node",
   domains: remoteEnv ? [remoteEnv.WEB_DOMAIN] : [],
 })
 

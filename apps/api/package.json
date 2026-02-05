@@ -7,15 +7,15 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@effect/platform": "^0.94.2",
-    "@effect/rpc": "^0.73.0",
-    "@effect/sql": "^0.49.0",
-    "@effect/sql-d1": "^0.47.0",
-    "@effect/sql-drizzle": "^0.48.0",
+    "@effect/platform": "catalog:effect",
+    "@effect/rpc": "catalog:effect",
+    "@effect/sql": "catalog:effect",
+    "@effect/sql-d1": "catalog:effect",
+    "@effect/sql-drizzle": "catalog:effect",
     "better-auth": "catalog:better-auth",
     "drizzle-orm": "catalog:drizzle",
     "drizzle-zod": "catalog:drizzle",
-    "effect": "^3.19.15",
+    "effect": "catalog:effect",
     "shared": "workspace:*",
     "zod": "catalog:default"
   },
