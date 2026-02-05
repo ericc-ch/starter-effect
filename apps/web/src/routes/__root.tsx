@@ -1,7 +1,4 @@
-import { Toaster } from "@/components/sonner"
-import { ThemeSync } from "@/components/theme-sync"
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import type React from "react"
 import globalCss from "../global.css?url"
 
@@ -37,9 +34,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
-        <ThemeSync />
-        <Toaster expand richColors />
-        {import.meta.env.DEV && <TanStackRouterDevtoolsPanel />}
         <Scripts />
       </body>
     </html>

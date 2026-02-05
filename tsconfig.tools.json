@@ -5,11 +5,11 @@
     "./.opencode/plugin/",
     "./scripts/",
     "./alchemy.run.ts",
-    "**/*.config.*"
+    "**/*.config.*",
   ],
 
   "compilerOptions": {
     "composite": true,
-    "types": ["node", "@cloudflare/workers-types"]
-  }
+    "types": ["node", "@cloudflare/workers-types"],
+  },
 }
