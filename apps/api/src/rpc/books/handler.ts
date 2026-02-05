@@ -8,6 +8,7 @@ import {
 } from "shared/schema"
 import { Database } from "../../lib/db"
 import { NotFoundError } from "../errors"
+import { getSession } from "../util/session"
 import { BooksRpcGroup } from "./contract"
 
 export class BookRepository extends Effect.Service<BookRepository>()(
@@ -89,33 +90,29 @@ export class BookRepository extends Effect.Service<BookRepository>()(
 ) {}
 
 export const BooksHandlers = BooksRpcGroup.toLayer({
-  BookGet: (payload) =>
-    Effect.gen(function* () {
-      const repo = yield* BookRepository
-      return yield* repo.get(payload.id)
-    }),
+  BookGet: Effect.fn(function* (payload) {
+    const repo = yield* BookRepository
+    return yield* repo.get(payload.id)
+  }),
 
-  BooksList: () =>
-    Effect.gen(function* () {
-      const repo = yield* BookRepository
-      return yield* repo.list
-    }),
+  BooksList: Effect.fn(function* () {
+    const repo = yield* BookRepository
+    return yield* repo.list
+  }),
 
-  BooksCreate: (payload) =>
-    Effect.gen(function* () {
-      const repo = yield* BookRepository
-      return yield* repo.create(payload)
-    }),
+  BooksCreate: Effect.fn(function* (payload, { headers }) {
+    yield* getSession(headers)
+    const repo = yield* BookRepository
+    return yield* repo.create(payload)
+  }),
 
-  BooksUpdate: (payload) =>
-    Effect.gen(function* () {
-      const repo = yield* BookRepository
-      return yield* repo.update(payload.id, payload.data)
-    }),
+  BooksUpdate: Effect.fn(function* (payload) {
+    const repo = yield* BookRepository
+    return yield* repo.update(payload.id, payload.data)
+  }),
 
-  BooksDelete: (payload) =>
-    Effect.gen(function* () {
-      const repo = yield* BookRepository
-      return yield* repo.remove(payload.id)
-    }),
+  BooksDelete: Effect.fn(function* (payload) {
+    const repo = yield* BookRepository
+    return yield* repo.remove(payload.id)
+  }),
 }).pipe(Layer.provide(BookRepository.Default))
