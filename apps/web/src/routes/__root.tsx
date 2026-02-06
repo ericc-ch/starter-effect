@@ -1,4 +1,5 @@
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
+import { RegistryProvider } from "@effect-atom/atom-react"
 import type React from "react"
 import globalCss from "../global.css?url"
 
@@ -33,7 +34,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {children}
+        <RegistryProvider>{children}</RegistryProvider>
         <Scripts />
       </body>
     </html>
