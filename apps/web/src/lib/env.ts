@@ -1,7 +1,13 @@
-import { z } from "zod"
+import { Schema } from "effect"
 
-const envSchema = z.object({
-  VITE_API_URL: z.url().default("http://localhost:1337"),
+const EnvSchema = Schema.Struct({
+  VITE_API_URL: Schema.URL.pipe(
+    Schema.optional,
+    Schema.withDefaults({
+      decoding: () => new URL("http://localhost:1337"),
+      constructor: () => new URL("http://localhost:1337"),
+    }),
+  ),
 })
 
-export const env = envSchema.parse(import.meta.env)
+export const env = Schema.decodeUnknownSync(EnvSchema)(import.meta.env)
